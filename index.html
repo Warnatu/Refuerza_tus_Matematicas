@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Refuerza tus matemáticas</title>
+  <style>
+    body {
+  font-family: 'Comic Sans MS', cursive;
+  margin: 0;
+  background-color: #d2f8d2;
+  color: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+    .contenedor {
+      background-color: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #2e7d32;
+    }
+
+    select, input {
+      font-size: 18px;
+      padding: 8px;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .resultado {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+
+    .explicacion {
+      margin-top: 10px;
+      font-size: 18px;
+      background-color: #e8f5e9;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .emoji-line {
+      font-size: 30px;
+      line-height: 2em;
+      margin-top: 15px;
+    }
+
+    .correcto {
+      animation: brillar 1s ease-in-out forwards;
+      color: green;
+    }
+
+    .incorrecto {
+      animation: temblar 0.5s ease-in-out;
+      color: red;
+    }
+
+    @keyframes brillar {
+      0% { transform: scale(1); opacity: 0.5; }
+      100% { transform: scale(1.2); opacity: 1; }
+    }
+
+    @keyframes temblar {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <h1>Refuerza tus Matemáticas</h1>
+
+    <div id="pantalla-inicio">
+      <p>¿Qué operación quieres practicar?</p>
+      <select id="operacion">
+        <option value="suma">Suma</option>
+        <option value="resta">Resta</option>
+        <option value="multiplicacion">Multiplicación</option>
+      </select>
+      <br>
+      <button onclick="iniciar()">Comenzar</button>
+    </div>
+
+    <div id="pantalla-ejercicio" style="display:none;">
+      <p id="pregunta"></p>
+      <input type="number" id="respuesta" placeholder="Escribe tu respuesta">
+      <br>
+      <button onclick="verificar()">Verificar</button>
+    </div>
+
+    <div id="pantalla-resultado" style="display:none;">
+      <p id="resultado"></p>
+      <div class="explicacion" id="explicacion"></div>
+      <div class="emoji-line" id="graficos"></div>
+      <button onclick="reiniciar()">Intentar otra</button>
+    </div>
+  </div>
+
+  <script>
+    let num1, num2, operacionCorrecta, tipoOperacion, emojiSeleccionado;
+
+    const emojis = {
+      suma: ['🍎', '🧃', '🧸', '✏️', '🌟'],
+      resta: ['🍎', '🧃', '🧸', '✏️', '🌟'],
+      multiplicacion: ['🍎', '🧃', '🧸', '✏️', '🌟']
+    };
+
+    const explicacionesBase = {
+      suma: cantidad => `Vamos a sumar: Si tienes <strong>${num1}</strong> ${emojiSeleccionado} y recibes <strong>${num2}</strong> más, juntas todo y obtienes <strong>${cantidad}</strong>.`,
+      resta: cantidad => `Vamos a restar: Si tienes <strong>${num1}</strong> ${emojiSeleccionado} y quitas <strong>${num2}</strong>, te quedan <strong>${cantidad}</strong>.`,
+      multiplicacion: cantidad => `Vamos a multiplicar: Tienes <strong>${num1}</strong> grupos y cada uno tiene <strong>${num2}</strong> ${emojiSeleccionado}. En total, eso es <strong>${cantidad}</strong> ${emojiSeleccionado}.`
+    };
+
+    function iniciar() {
+      tipoOperacion = document.getElementById("operacion").value;
+      num1 = Math.floor(Math.random() * 5) + 1;
+      num2 = Math.floor(Math.random() * 5) + 1;
+      if (tipoOperacion === "resta" && num2 > num1) [num1, num2] = [num2, num1];
+
+      if (tipoOperacion === "suma") operacionCorrecta = num1 + num2;
+      if (tipoOperacion === "resta") operacionCorrecta = num1 - num2;
+      if (tipoOperacion === "multiplicacion") operacionCorrecta = num1 * num2;
+
+      const pregunta = {
+        suma: `${num1} + ${num2} = ?`,
+        resta: `${num1} - ${num2} = ?`,
+        multiplicacion: `${num1} × ${num2} = ?`
+      }[tipoOperacion];
+
+      const opciones = emojis[tipoOperacion];
+      emojiSeleccionado = opciones[Math.floor(Math.random() * opciones.length)];
+
+      document.getElementById("pantalla-inicio").style.display = "none";
+      document.getElementById("pantalla-ejercicio").style.display = "block";
+      document.getElementById("pregunta").textContent = pregunta;
+    }
+
+    function verificar() {
+      const respuesta = parseInt(document.getElementById("respuesta").value);
+      const resultado = document.getElementById("resultado");
+      const explicacion = document.getElementById("explicacion");
+      const graficos = document.getElementById("graficos");
+
+      const esCorrecto = respuesta === operacionCorrecta;
+      resultado.textContent = esCorrecto ? "¡Correcto! 🎉" : `Incorrecto 😢. Era ${operacionCorrecta}.`;
+      resultado.className = esCorrecto ? "correcto" : "incorrecto";
+
+      explicacion.innerHTML = explicacionesBase[tipoOperacion](operacionCorrecta);
+
+      let dibujo = "";
+      if (tipoOperacion === "multiplicacion") {
+        for (let i = 0; i < num1; i++) {
+          dibujo += `<div>${emojiSeleccionado.repeat(num2)}</div>`;
+        }
+      } else {
+        dibujo = `<div>${emojiSeleccionado.repeat(num1)} + ${emojiSeleccionado.repeat(num2)} = ${emojiSeleccionado.repeat(operacionCorrecta)}</div>`;
+      }
+
+      graficos.innerHTML = dibujo;
+
+      document.getElementById("pantalla-ejercicio").style.display = "none";
+      document.getElementById("pantalla-resultado").style.display = "block";
+    }
+
+    function reiniciar() {
+      document.getElementById("pantalla-resultado").style.display = "none";
+      document.getElementById("pantalla-inicio").style.display = "block";
+      document.getElementById("respuesta").value = "";
+    }
+  </script>
+</body>
+</html>
