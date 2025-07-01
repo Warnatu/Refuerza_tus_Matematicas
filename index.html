@@ -184,7 +184,8 @@
           dibujo += `<div>${emojiSeleccionado.repeat(num2)}</div>`;
         }
       } else {
-        dibujo = `<div>${emojiSeleccionado.repeat(num1)} + ${emojiSeleccionado.repeat(num2)} = ${emojiSeleccionado.repeat(operacionCorrecta)}</div>`;
+        let operadorSimbolo = tipoOperacion === "suma" ? "+" : tipoOperacion === "resta" ? "−" : "×";
+dibujo = `<div>${emojiSeleccionado.repeat(num1)} ${operadorSimbolo} ${emojiSeleccionado.repeat(num2)} = ${emojiSeleccionado.repeat(operacionCorrecta)}</div>`;
       }
 
       graficos.innerHTML = dibujo;
